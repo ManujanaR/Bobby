@@ -1,0 +1,19 @@
+# Secrets
+.env
+local.properties
+*.jks
+*.keystore
+
+# Gradle and build output
+.gradle/
+build/
+*.class
+
+# IDE
+.idea/
+.vscode/
+.antigravity/
+*.iml
+
+# OS
+.DS_Store
