@@ -1,0 +1,49 @@
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE contributor_skills (
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tag VARCHAR(100) NOT NULL,
+    PRIMARY KEY (user_id, tag)
+);
+
+CREATE TABLE questions (
+    id BIGSERIAL PRIMARY KEY,
+    asker_id BIGINT NOT NULL REFERENCES users(id),
+    text TEXT NOT NULL,
+    tags TEXT NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'OPEN',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE entries (
+    id BIGSERIAL PRIMARY KEY,
+    question_id BIGINT REFERENCES questions(id) ON DELETE SET NULL,
+    title VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    tags TEXT NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    contributor_id BIGINT NOT NULL REFERENCES users(id),
+    status VARCHAR(32) NOT NULL DEFAULT 'UNVERIFIED',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE confirmations (
+    entry_id BIGINT NOT NULL REFERENCES entries(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (entry_id, user_id)
+);
+
+CREATE TABLE flags (
+    id BIGSERIAL PRIMARY KEY,
+    entry_id BIGINT NOT NULL REFERENCES entries(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reason TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
